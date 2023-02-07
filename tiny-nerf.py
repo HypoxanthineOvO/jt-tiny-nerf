@@ -4,6 +4,8 @@ import jittor as jt
 
 import numpy as np
 import matplotlib.pyplot as plt
+import tqdm
+
 
 from model import NeRF
 from optimize import *
@@ -37,7 +39,7 @@ i_plot = 25
 optimizer = jt.nn.Adam(model.parameters(),lr = 5e-4)
 
 t = time.time()
-for i in range(N_iters + 1):
+for i in tqdm.tqdm(range(N_iters + 1)):
     img_i = np.random.randint(images.shape[0])
     target = images[img_i]
     pose = poses[img_i]
@@ -47,7 +49,8 @@ for i in range(N_iters + 1):
     optimizer.step(loss)
     
     if i%i_plot==0:
-        print(i, (time.time() - t) / i_plot, 'secs per iter')
+        #print(i, (time.time() - t) / i_plot, 'secs per iter')
+        tqdm.tqdm.write(f"{i}, {(time.time() - t) / i_plot} secs per iter")
         t = time.time()
         
         # Render the holdout view for logging
@@ -60,6 +63,7 @@ for i in range(N_iters + 1):
         iternums.append(i)
         
         plt.imsave(f"./output/Iteration{i}.jpg",rgb.numpy())
-        print(f"PSNR = {psnr}")
+        #print(f"PSNR = {psnr}")
+        tqdm.tqdm.write(f"PSNR = {psnr}")
         
 print("DONE!")
